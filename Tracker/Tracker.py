@@ -136,12 +136,26 @@ class PedestrianTracker():
                 dist_matrix[j, i] = dist
         return dist_matrix
 
+    def set_pre_num_inst(self, value):
+        return None
 
-    def track(self, detected_peds):
+    def get_num_inst(self):
+        return None        
+        
+    def track(self, results):
         """
         main function.
         input: list of the box coordinates of detected pedestrians.
         """
+
+        detected_peds = []
+        # Tracking
+        for vDetectedResult in results:
+            detected_peds.append([vDetectedResult.xmin, 
+                          vDetectedResult.ymin, 
+                          vDetectedResult.xmax, 
+                          vDetectedResult.ymax])
+
         if self.curr_ped_num == 0:
             for ped in detected_peds:
                 self.add_new_ped(ped)

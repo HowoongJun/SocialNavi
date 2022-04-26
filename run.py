@@ -15,6 +15,7 @@ import argparse
 import cv2, os
 from common.Log import DebugPrint
 from Tracker.Tracker import PedestrianTracker
+from Tracker.Tracker_cv2 import CTrackerCv2
 
 parser = argparse.ArgumentParser(description="Social Navi Pedestrian Detection and Tracking")
 parser.add_argument('--dir', type=str, dest='data_dir',
@@ -30,7 +31,12 @@ if __name__ == "__main__":
     vImgFileList.sort()
 
     oDetector = CDetector()
-    oTracker = PedestrianTracker()
+    if(args.tracking == 'hogun'):
+        oTracker = CTrackerCv2()
+    else:
+        oTracker = PedestrianTracker()
+
+    uPreNumInst = 0
 
     for strImgPath in vImgFileList:
         DebugPrint().info("Processing " + strImgPath)
@@ -41,13 +47,9 @@ if __name__ == "__main__":
         oResults = oDetector.Read()
         oDetector.Reset()
         
-        vBBox = []
         # Tracking
-        for vDetectedResult in oResults:
-            vBBox.append([vDetectedResult.xmin, 
-                          vDetectedResult.ymin, 
-                          vDetectedResult.xmax, 
-                          vDetectedResult.ymax])
-        oTracker.track(vBBox)
+        oTracker.set_pre_num_inst(uPreNumInst)
+        oTracker.track(oResults)
         oImgRender = oTracker.visualize(oImg)
         cv2.imwrite(os.path.join(strResultDir, strImgPath), oImgRender)
+        uPreNumInst = oTracker.get_num_inst()
