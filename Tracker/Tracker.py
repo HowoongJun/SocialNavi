@@ -196,9 +196,12 @@ class PedestrianTracker():
             ped = self.peds_tracked[ped_id]
             h, w = ped.ctr_pos
             int_h, int_w = int(h)*size_ratio, int(w)*size_ratio
-            img[int_w-mg:int_w+mg, int_h-mg:int_h+mg] = [255,0,0]
+            x1,y1,x2,y2 = ped.pos
+            cv2.rectangle(img, [int(x1),int(y1)], [int(x2),int(y2)], color=(0,255,0), thickness=3)
 
             font_color = (0,0,40)
+            cv2.rectangle(img, (int_h-10,int_w+10), (int_h+90,int_w-40), color=(255,255,255), thickness=-1)
+            img[int_w-mg:int_w+mg, int_h-mg:int_h+mg] = [255,0,0]
             cv2.putText(img, "P.%02d" % ped_id, (int_h, int_w), cv2.FONT_HERSHEY_SIMPLEX,
                        font_size, font_color, font_width, cv2.LINE_AA)
         return img
